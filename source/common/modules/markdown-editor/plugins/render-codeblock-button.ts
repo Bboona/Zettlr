@@ -119,85 +119,26 @@
    // We'll only render the viewport
    const viewport = cm.getViewport()
    for (let i = viewport.from; i < viewport.to; i++) {
-     if (cm.getModeAt({ line: i, ch: 0 }).name !== 'markdown-zkn') {
-       continue
-     }
- 
-     // First get the line and test if the contents contain a link
-     const line = cm.getLine(i)
- 
-     for (const match of line.matchAll(emphasisRE)) {
-       const which = match[1].length // 1=italic, 2=bold, 3=italic and bold
-       // Since we're using matchAll, index will not be undefined
-       const from = { line: i, ch: match.index as number }
-       const to = { line: i, ch: match.index as number + match[0].length }
- 
-       if (!canRenderElement(cm, from, to)) {
-         continue
-       }
- 
-       const span = document.createElement('span')
-       switch (which) {
-         case 1: // Italic
-           span.style.fontStyle = 'italic'
-           break
-         case 2: // Bold or strikethrough
-           if (match[1] === '~~') {
-             span.style.textDecoration = 'line-through'
-           } else {
-             span.style.fontWeight = 'bold'
-           }
-           break
-         case 3: // Both
-           span.style.fontStyle = 'italic'
-           span.style.fontWeight = 'bold'
-           break
-       }	
-       span.style.background = 'green'
- 
-       // Replace the few things that can be part of an emphasis
-       let contents = match[2]
-       contents = contents.replace(/~~([^~]+?)~~/g, '<del>$1</del>')
-       contents = contents.replace(/`([^`]+?)`/g, '<code>$1</code>')
- 
-       span.innerHTML = contents
- 
-       const textMarker = cm.markText(
-         from, to,
-         {
-           className: 'test',
-           clearOnEnter: true,
-           replacedWith: span,
-           inclusiveLeft: false,
-           inclusiveRight: false
-         }
-       )
- 
-       span.onclick = function (e) {
-         textMarker.clear()
-         cm.setCursor(cm.coordsChar({ left: e.clientX, top: e.clientY }))
-         cm.focus()
-       }
-     }
-     
+      
      // -------------- CODE TO CREATE BUTTON -------------------------------
-     // At the moment this only gets the first code block (the array[0] part)
-     // This can be fixed later by adding a for loop over all the elements with
-     // the class name
-     let codeBlock = document.getElementsByClassName("code-block-first-line")[0]
      
-     // Create a button
-     let copyButton = document.createElement("button")
-     copyButton.className = "code-block-copy-button"
-     copyButton.innerText = "Copy Code Block"
+     let codeBlocks = document.getElementsByClassName("code-block-first-line")
      
-     // If the code block does not already have a button
-     // I added this because it seemed to be constantly adding buttons while
-     // the render plugin was running
-     // This way, only one button will be added to a code block
-     if (codeBlock.querySelector(".code-block-copy-button") == null) {
-     	codeBlock.appendChild(copyButton)
+     for (var j = 0; j < codeBlocks.length; j++) {       
+	     // Create a button
+	     let copyButton = document.createElement("button")
+	     copyButton.className = "code-block-copy-button"
+	     copyButton.innerText = "Copy Code Block"
+	     
+	     // If the code block does not already have a button
+	     // I added this because it seemed to be constantly adding buttons while
+	     // the render plugin was running
+	     // This way, only one button will be added to a code block
+	     if (codeBlocks[j].querySelector(".code-block-copy-button") == null) {
+	     	codeBlocks[j].appendChild(copyButton)
+	     }
      }
+
    } // END for-loop
  }
  
